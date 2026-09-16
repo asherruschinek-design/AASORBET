@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORDER - AA SORBET</title>
+    <link rel="stylesheet" href="STYLE.css">
+    <style>
+        .checkout-box {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #333;
+            background-color: #000;
+            color: white;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+        .qty-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #000;
+            padding: 10px 15px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .qty-selector input {
+            width: 60px;
+            padding: 5px;
+            text-align: center;
+            background: #111;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 3px;
+        }
+        .total-display {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 25px 0;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #25D366;
+            color: white;
+            border: none;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            margin-bottom: 12px;
+            text-align: center;
+            text-decoration: none;
+        }
+        .submit-btn:hover {
+            opacity: 0.9;
+            color: white;
+        }
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #222;
+            color: white;
+            border: 1px solid #444;
+            font-weight: bold;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: #333;
+            border-color: #666;
+        }
+        .pay-notice {
+            display: block;
+            text-align: center;
+            color: #aaa;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <a href="AASORBET.html" class="logo">
+        <img src="sorbet.png" alt="AA Sorbet">
+    </a>
+    <h1>AA SORBET</h1>
+    <nav>
+        <a href="AASORBET.html">HOME</a>
+        <a href="order.html">ORDER</a>
+    </nav>
+</header>
+
+<main class="flavours">
+    <h2>1.5L TUBS — $20 EACH</h2>
+
+    <div class="checkout-box">
+        <div class="form-group">
+            <label for="customerName">Your Name *</label>
+            <input type="text" id="customerName" required placeholder="YOUR NAME" oninput="updateWhatsAppLink()">
+        </div>
+
+        <div class="form-group">
+            <label for="customerPhone">Phone Number *</label>
+            <input type="tel" id="customerPhone" required placeholder="0412 345 678" oninput="updateWhatsAppLink()">
+        </div>
+
+        <label style="display:block; margin-bottom: 8px; font-size: 14px; color: #ccc;">Select Quantities:</label>
+
+        <div class="qty-selector">
+            <span>Strawberry (1.5L)</span>
+            <input type="number" id="qtyStrawberry" min="0" value="0" oninput="updateWhatsAppLink()">
+        </div>
+
+        <div class="qty-selector">
+            <span>Mango (1.5L)</span>
+            <input type="number" id="qtyMango" min="0" value="0" oninput="updateWhatsAppLink()">
+        </div>
+
+        <div class="total-display">
+            <span>Total Price:</span>
+            <span id="totalPriceDisplay">$0.00</span>
+        </div>
+
+        <!-- FIXED: Direct hyperlink with target="_blank" that gets built dynamically as they fill out the form -->
+        <a href="#" id="whatsappOrderLink" class="submit-btn" target="_blank" onclick="return checkFormValidation(event)">PLACE ORDER VIA WHATSAPP</a>
+
+        <button type="button" class="copy-btn" id="copyBtn" onclick="copyReceipt()">COPY RECEIPT DETAILS</button>
+
+        <small class="pay-notice">Payment is due on pickup or delivery.</small>
+    </div>
+</main>
+
+<footer>
+    <a href="AASORBET.html">AA SORBET</a>
+</footer>
+
+<script>
+    const PRICE_PER_TUB = 20;
+
+    // FIXED: Pre-builds everything instantly inside the link href attribute to completely stop redirects and popup blocks
+    function updateWhatsAppLink() {
+        const strawberryCount = parseInt(document.getElementById('qtyStrawberry').value) || 0;
+        const mangoCount = parseInt(document.getElementById('qtyMango').value) || 0;
+        const total = (strawberryCount + mangoCount) * PRICE_PER_TUB;
+
+        document.getElementById('totalPriceDisplay').innerText = '$' + total.toFixed(2);
+
+        const name = document.getElementById('customerName').value.trim();
+        const phone = document.getElementById('customerPhone').value.trim();
+        const linkElement = document.getElementById('whatsappOrderLink');
+
+        if (!name || !phone || total === 0) {
+            linkElement.href = "#";
+            return;
+        }
+
+        let bodyText = `*YOUR AA SORBET ORDER*\n\n`;
+        bodyText += `*Name:* ${name}\n`;
+        bodyText += `*Phone:* ${phone}\n\n`;
+        bodyText += `*Order Details (1.5L Tubs):*\n`;
+        if (strawberryCount > 0) bodyText += `- Strawberry x ${strawberryCount}\n`;
+        if (mangoCount > 0) bodyText += `- Mango x ${mangoCount}\n`;
+        bodyText += `\n*Total Price:* $${total.toFixed(2)}\n`;
+        bodyText += `*Payment:* Pay on pickup/delivery`;
+
+        // Using ://whatsapp.com directly in the address attribute guarantees it maps to the correct app layer
+        linkElement.href = "https://://whatsapp.com?phone=61420798937&text=" + encodeURIComponent(bodyText);
+    }
+
+    function checkFormValidation(event) {
+        const name = document.getElementById('customerName').value.trim();
+        const phone = document.getElementById('customerPhone').value.trim();
+        const strawberryCount = parseInt(document.getElementById('qtyStrawberry').value) || 0;
+        const mangoCount = parseInt(document.getElementById('qtyMango').value) || 0;
+        const total = (strawberryCount + mangoCount) * PRICE_PER_TUB;
+
+        if (!name || !phone) {
+            event.preventDefault();
+            alert('Please fill out your name and phone number.');
+            return false;
+        }
+
+        if (total === 0) {
+            event.preventDefault();
+            alert('Please add at least one tub to your order.');
+            return false;
+        }
+        return true;
+    }
+
+    function copyReceipt() {
+        const strawberryCount = parseInt(document.getElementById('qtyStrawberry').value) || 0;
+        const mangoCount = parseInt(document.getElementById('qtyMango').value) || 0;
+        const total = (strawberryCount + mangoCount) * PRICE_PER_TUB;
+        const name = document.getElementById('customerName').value.trim();
+        const phone = document.getElementById('customerPhone').value.trim();
+
+        if (!name || !phone || total === 0) {
+            alert('Please fill out your details and add items to your order first.');
+            return;
+        }
+
+        let bodyText = `YOUR AA SORBET ORDER\n\nName: ${name}\nPhone: ${phone}\n\nOrder Details (1.5L Tubs):\n`;
+        if (strawberryCount > 0) bodyText += `- Strawberry x ${strawberryCount}\n`;
+        if (mangoCount > 0) bodyText += `- Mango x ${mangoCount}\n`;
+        bodyText += `\nTotal Price: $${total.toFixed(2)}\nPayment: Pay on pickup/delivery`;
+
+        navigator.clipboard.writeText(bodyText).then(() => {
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.innerText = 'COPIED TO CLIPBOARD! ✓';
+            copyBtn.style.backgroundColor = '#333';
+
+            setTimeout(() => {
+                copyBtn.innerText = 'COPY RECEIPT DETAILS';
+                copyBtn.style.backgroundColor = '#222';
+            }, 3000);
+        }).catch(err => {
+            alert('Could not copy text automatically. Please take a screenshot instead.');
+        });
+    }
+</script>
+</body>
+</html>
