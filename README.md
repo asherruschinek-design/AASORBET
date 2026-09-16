@@ -1,2 +1,0 @@
-# sergthjk-
-wertyhjk
